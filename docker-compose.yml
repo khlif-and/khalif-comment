@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: khalif_comment_api
+    restart: no
+    ports:
+      - "8083:8083"
+    env_file:
+      - .env
+    environment:
+      # PENTING:
+      # host tetap 'khalif_db' (shared container di infra)
+      # dbname diganti jadi 'khalif_comment_db'
+      - DATABASE_URL=postgres://postgres:postgres@khalif_db:5432/khalif_comment_db?sslmode=disable
+      
+      # host tetap 'khalif_redis' (shared container)
+      - REDIS_ADDR=khalif_redis:6379
+    networks:
+      - khalif_net
+
+# Gunakan network eksternal yang sama dengan service lain
+networks:
+  khalif_net:
+    external: true
+    name: khalif_network

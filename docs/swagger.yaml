@@ -1,0 +1,197 @@
+basePath: /
+definitions:
+  domain.Comment:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      story_id:
+        description: UUID Story dari service khalif-stories
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        description: User ID dari JWT
+        type: string
+    type: object
+  handler.CreateCommentRequest:
+    properties:
+      content:
+        type: string
+      story_id:
+        type: string
+    required:
+    - content
+    - story_id
+    type: object
+  handler.UpdateCommentRequest:
+    properties:
+      content:
+        type: string
+    required:
+    - content
+    type: object
+  utils.APIResponse:
+    properties:
+      data: {}
+      error:
+        type: string
+      message:
+        type: string
+      meta: {}
+    type: object
+host: localhost:8083
+info:
+  contact:
+    email: support@khalifstories.com
+    name: API Support
+  description: API Service for User Comments
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Khalif Comment API
+  version: "1.0"
+paths:
+  /comments:
+    get:
+      description: Retrieve all comments for a specific story
+      parameters:
+      - description: Story UUID
+        in: query
+        name: story_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Comment'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.APIResponse'
+      summary: Get comments by story
+      tags:
+      - comments
+    post:
+      consumes:
+      - application/json
+      description: Create a new comment for a story
+      parameters:
+      - description: Comment Data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.CreateCommentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Comment'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.APIResponse'
+      security:
+      - BearerAuth: []
+      summary: Post a comment
+      tags:
+      - comments
+  /comments/{id}:
+    delete:
+      description: Delete a comment by ID (Owner only)
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.APIResponse'
+        "403":
+          description: Unauthorized Action
+          schema:
+            $ref: '#/definitions/utils.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.APIResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete a comment
+      tags:
+      - comments
+    put:
+      consumes:
+      - application/json
+      description: Update comment content (Owner only)
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.UpdateCommentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Comment'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.APIResponse'
+        "403":
+          description: Unauthorized Action
+          schema:
+            $ref: '#/definitions/utils.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.APIResponse'
+      security:
+      - BearerAuth: []
+      summary: Update a comment
+      tags:
+      - comments
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
